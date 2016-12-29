@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.sun.corba.se.impl.logging.InterceptorsSystemException;
+
 class Myframe extends JFrame 
 {
 	/**
@@ -164,266 +166,165 @@ class Calculate implements Runnable
 			flag = true;
 		}
 	}
-
-	public static ArrayList<Integer> assume(int row, int column) {
-		/*遍历所有可能的值
-		 * assume 函数将大九宫格分成9个小九宫格，主要是判断在同行同列同一个小九宫格内哪些数值已经被填充了，添加该格备选的数值，就是候选法的思想。
-		 * 为了提高算法的效率，我们将大九宫格分成9个小九宫格
-		 * 主要是分析在同行同列同一个小九宫格内哪些数值已经被填充了，然后地调用 arrayAdd() 函数，添加该格备选的数值。
-		 */
+	public static ArrayList<Integer> assume(int row, int column)
+	{
+		//创建数组array
 		ArrayList<Integer> array = new ArrayList<Integer>();
 		TreeSet<Integer> tree = new TreeSet<Integer>();
-		if (0 <= row && row <= 2 && 0 <= column && column <= 2) {
-			for (int a = 0; a < 9; a++) {
-				if (a != column && b[row][a] != 0) {
-					tree.add(new Integer(b[row][a]));
-				}
+		
+		//添加同一列其他的元素值
+		for(int i=0;i<9;i++)
+		{
+			//如果该格不为空，就将其添加到tree中
+			if(i!=column&&b[row][i]!=0)
+			{
+				tree.add(new Integer(b[row][i]));
 			}
-			for (int b1 = 0; b1 < 9; b1++) {
-				if (b1 != row && b[b1][column] != 0) {
-					tree.add(new Integer(b[b1][column]));
-				}
-			}
-			for (int a2 = 0; a2 < 3; a2++) {
-				for (int b4 = 0; b4 < 3; b4++) {
-					if ((!(a2 == row && b4 == column)) && b[a2][b4] != 0) {
-						tree.add(new Integer(b[a2][b4]));
-					}
-				}
-			}
-			arrayAdd(array, tree);
-		} else if (0 <= row && row <= 2 && 3 <= column && column <= 5) {
-			for (int a = 0; a < 9; a++) {
-				if (a != column && b[row][a] != 0) {
-					tree.add(new Integer(b[row][a]));
-				}
-			}
-			for (int b1 = 0; b1 < 9; b1++) {
-				if (b1 != row && b[b1][column] != 0) {
-					tree.add(new Integer(b[b1][column]));
-				}
-			}
-			for (int a2 = 0; a2 < 3; a2++) {
-				for (int b4 = 3; b4 < 6; b4++) {
-					if ((!(a2 == row && b4 == column)) && b[a2][b4] != 0) {
-						tree.add(new Integer(b[a2][b4]));
-					}
-				}
-			}
-			arrayAdd(array, tree);
-		} else if (0 <= row && row <= 2 && 6 <= column && column <= 8) {
-			for (int a = 0; a < 9; a++) {
-				if (a != column && b[row][a] != 0) {
-					tree.add(new Integer(b[row][a]));
-				}
-			}
-			for (int b1 = 0; b1 < 9; b1++) {
-				if (b1 != row && b[b1][column] != 0) {
-					tree.add(new Integer(b[b1][column]));
-				}
-			}
-			for (int a2 = 0; a2 < 3; a2++) {
-				for (int b4 = 6; b4 < 9; b4++) {
-					if ((!(a2 == row && b4 == column)) && b[a2][b4] != 0) {
-						tree.add(new Integer(b[a2][b4]));
-					}
-				}
-			}
-			arrayAdd(array, tree);
-		} else if (3 <= row && row <= 5 && 0 <= column && column <= 2) {
-			for (int a = 0; a < 9; a++) {
-				if (a != column && b[row][a] != 0) {
-					tree.add(new Integer(b[row][a]));
-				}
-			}
-			for (int b1 = 0; b1 < 9; b1++) {
-				if (b1 != row && b[b1][column] != 0) {
-					tree.add(new Integer(b[b1][column]));
-				}
-			}
-			for (int a2 = 3; a2 < 6; a2++) {
-				for (int b4 = 0; b4 < 3; b4++) {
-					if ((!(a2 == row && b4 == column)) && b[a2][b4] != 0) {
-						tree.add(new Integer(b[a2][b4]));
-					}
-				}
-			}
-			arrayAdd(array, tree);
-		} else if (3 <= row && row <= 5 && 3 <= column && column <= 5) {
-			for (int a = 0; a < 9; a++) {
-				if (a != column && b[row][a] != 0) {
-					tree.add(new Integer(b[row][a]));
-				}
-			}
-			for (int b1 = 0; b1 < 9; b1++) {
-				if (b1 != row && b[b1][column] != 0) {
-					tree.add(new Integer(b[b1][column]));
-				}
-			}
-			for (int a2 = 3; a2 < 6; a2++) {
-				for (int b4 = 3; b4 < 6; b4++) {
-					if ((!(a2 == row && b4 == column)) && b[a2][b4] != 0) {
-						tree.add(new Integer(b[a2][b4]));
-					}
-				}
-			}
-			arrayAdd(array, tree);
-		} else if (3 <= row && row <= 5 && 6 <= column && column <= 8) {
-			for (int a = 0; a < 9; a++) {
-				if (a != column && b[row][a] != 0) {
-					tree.add(new Integer(b[row][a]));
-				}
-			}
-			for (int b1 = 0; b1 < 9; b1++) {
-				if (b1 != row && b[b1][column] != 0) {
-					tree.add(new Integer(b[b1][column]));
-				}
-			}
-			for (int a2 = 3; a2 < 6; a2++) {
-				for (int b4 = 6; b4 < 9; b4++) {
-					if ((!(a2 == row && b4 == column)) && b[a2][b4] != 0) {
-						tree.add(new Integer(b[a2][b4]));
-					}
-				}
-			}
-			arrayAdd(array, tree);
-		} else if (6 <= row && row <= 8 && 0 <= column && column <= 2) {
-			for (int a = 0; a < 9; a++) {
-				if (a != column && b[row][a] != 0) {
-					tree.add(new Integer(b[row][a]));
-				}
-			}
-			for (int b1 = 0; b1 < 9; b1++) {
-				if (b1 != row && b[b1][column] != 0) {
-					tree.add(new Integer(b[b1][column]));
-				}
-			}
-			for (int a2 = 6; a2 < 9; a2++) {
-				for (int b4 = 0; b4 < 3; b4++) {
-					if ((!(a2 == row && b4 == column)) && b[a2][b4] != 0) {
-						tree.add(new Integer(b[a2][b4]));
-					}
-				}
-			}
-			arrayAdd(array, tree);
-		} else if (6 <= row && row <= 8 && 3 <= column && column <= 5) {
-			for (int a = 0; a < 9; a++) {
-				if (a != column && b[row][a] != 0) {
-					tree.add(new Integer(b[row][a]));
-				}
-			}
-			for (int b1 = 0; b1 < 9; b1++) {
-				if (b1 != row && b[b1][column] != 0) {
-					tree.add(new Integer(b[b1][column]));
-				}
-			}
-			for (int a2 = 6; a2 < 9; a2++) {
-				for (int b4 = 3; b4 < 6; b4++) {
-					if ((!(a2 == row && b4 == column)) && b[a2][b4] != 0) {
-						tree.add(new Integer(b[a2][b4]));
-					}
-				}
-			}
-			arrayAdd(array, tree);
-		} else if (6 <= row && row <= 8 && 6 <= column && column <= 8) {
-			for (int a = 0; a < 9; a++) {
-				if (a != column && b[row][a] != 0) {
-					tree.add(new Integer(b[row][a]));
-				}
-			}
-			for (int b1 = 0; b1 < 9; b1++) {
-				if (b1 != row && b[b1][column] != 0) {
-					tree.add(new Integer(b[b1][column]));
-				}
-			}
-			for (int a2 = 6; a2 < 9; a2++) {
-				for (int b4 = 6; b4 < 9; b4++) {
-					if ((!(a2 == row && b4 == column)) && b[a2][b4] != 0) {
-						tree.add(new Integer(b[a2][b4]));
-					}
-				}
-			}
-			arrayAdd(array, tree);
 		}
+		
+		//添加同行的其他元素
+		for(int i=0;i<9;i++)
+		{
+			//如果该格满足添加，就添加到tree中
+			if(i!=row&&b[i][column]!=0)
+			{
+				tree.add(new Integer(b[i][column]));
+			}
+		}
+		
+		//获取元素在同一个九宫格的行
+		for(int i=(row/3)*3;i<(row/3+1)*3;i++)
+		{
+			//获取元素在同一个九宫格的列
+			for(int j=(column/3)*3;j<(column/3+1)*3;j++)
+			{
+				//如果元素满足条件都添加到tree中
+				if((!(i==row&&j==column))&&b[i][j]!=0)
+				{
+					tree.add(new Integer(b[i][j]));
+				}
+			}
+		}
+		arrayAdd(array, tree);
 		return array;
 	}
-
-	public void run() {
-		/*添加每格可能的选项
-		 * run 函数开始运行整个程序，生成最后的结果。
-		 * 在 run() 函数中填写空格的地方，我们的想法是将一行一行的分析，每个点都可能有几个值，
-		 * 我们用一个数组 utilization 来存放所有可能的值，在这个值的基础上填写下一个空格，
-		 * 当填写不动的时候回溯到这里，填写为 utilization 数组里的下一个值。
-		 */
-		for (int a = 0; a < 9; a++) {
-			for (int b1 = 0; b1 < 9; b1++) {
-				if (b[a][b1] != 0) {
-					boo[a][b1] = true;
-				} else {
-					boo[a][b1] = false;
+	
+	public void run()
+	{
+		//初始化变量行，列
+		int row =0, column =0;
+		//用flag来判断格子是否填入正确
+		boolean flag = true;
+		for(int i=0;i<9;i++)
+		{
+			for(int j=0;j<9;j++)
+			{
+				//boo的作用是找出用户填入数据的空格
+				if(b[i][j]!=0)
+				{
+					boo[i][j]=true;
+				}
+				else
+				{ //空格子需要填入数据
+					boo[i][j]=false;
 				}
 			}
 		}
-		boolean flag = true;
-		ArrayList<Integer>[][] utilization = new ArrayList[9][9];
-		int row = 0;
-		int column = 0;
-		while (column < 9) {
-			if (flag == true) {
-				row = 0;
+		
+		/*
+		 * arraylist是一个二维序列，它的每一个值都是一个数组指针
+		 * 存放了某个格子可能的解，当一个解错误时，调用下一个解
+		 */
+		@SuppressWarnings("unchecked")
+		ArrayList<Integer>[][] solution = new ArrayList[9][9];
+		while(column<9)
+		{
+			if(flag==true)
+			{
+				row=0;
 			}
-			while (row < 9) {
-				if (b[row][column] == 0) {
-					if (flag) {
+			while(row<9)
+			{
+				if(b[row][column]==0)
+				{
+					if(flag)
+					{
 						ArrayList<Integer> list = assume(row, column);
-						utilization[row][column] = list;
+						solution[row][column] = list;
 					}
-					if (utilization[row][column].isEmpty()) {
+					
+					//若没有找到可能的解，则前面的解错误，回溯到之间的格子修正答案
+					if(solution[row][column].isEmpty())
+					{
+						//调用flyback函数寻找合适的row和column
 						flyBack(boo, row, column);
+						//将row返回到合适的位子
 						row = upRow;
 						column = upColumn;
+						
+						//初始化有问题的格子
 						b[row][column] = 0;
 						column--;
 						flag = false;
 						break;
-					} // if(list.isEmpty())
-					else {
-						b[row][column] = utilization[row][column].get(0);
-						utilization[row][column].remove(0);
-						flag = true;
-						boolean r = true;
-						for (int a1 = 0; a1 < 9; a1++) {
-							for (int b1 = 0; b1 < 9; b1++) {
-								if (r == false) {
-									break;
-								}
-								if (b[a1][b1] == 0) {
-									r = false;
-								}
-							}
-						}
-						if (r) {
-							for (int a1 = 0; a1 < 9; a1++) {
-								for (int b1 = 0; b1 < 9; b1++) {
-									System.out.print("b[" + a1 + "][" + b1 + "]" + b[a1][b1] + ",");
-									Myframe.filed[a1][b1].setText(b[a1][b1] + "");
-								}
-							}
-						}
 					}
-				} // if(int[row][column]==0)
-				else {
+					else 
+					{
+						//将备选数组中的第一个值赋给b
+						b[row][column] = solution[row][column].get(0);
+						//因为上面已经赋值过了，所以就删除掉第一个数值
+						solution[row][column].remove(0);
+						flag=true;
+						
+						//判断是否所有的格子都填入正确，然后将正确的结果输出到屏幕上
+						judge();
+					}
+				}
+				else
+				{
+					//如果r为false，则格子还没有填满数据
 					flag = true;
 				}
 				row++;
 			}
 			column++;
 		}
+		
 	}
 	public void judge()
 	{
 		/**
 		 * 判断九宫格是否完成
 		 */
+		
+		boolean r = true;
+		for(int i=0;i<9;i++)
+		{
+			for(int j=0;j<9;j++)
+			{
+				if(r==false)
+				{
+					break;
+				}
+				
+				//如果b[i][j]需要计算，则将它提取出来
+				if(b[i][j]==0)
+				{
+					r=false;
+				}
+			}
+		}
+		
+		//如果r为true，则所有的格子都填满了
+		if(r)
+		{
+			for(int i=0;i<9;i++)
+			{
+				for(int j=0;j<9;j++)
+				{
+					Myframe.filed[i][j].setText(b[i][j]+"");
+				}
+			}
+		}
 	}
 }
