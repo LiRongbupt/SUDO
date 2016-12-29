@@ -11,48 +11,67 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-class Myframe extends JFrame {
+class Myframe extends JFrame 
+{
 	/**
-	 * 
+	 * 类介绍：创建数独九宫格界面
 	 */
 	private static final long serialVersionUID = 4753076496951651267L;
 	public static Object obj = new Object();
+	
+	//创建九宫格界面
 	public final static JTextField[][] filed = new JTextField[9][9];
-
-	public Myframe() {
-		for (int a = 0; a < 9; a++) {
-			for (int b = 0; b < 9; b++) {
-				filed[a][b] = new JTextField();
-				filed[a][b].setText("");
+    
+	public Myframe() 
+	{
+		/**
+		 * 功能：初始化界面，将81个格子都置为空
+		 */
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				filed[i][j] = new JTextField();
+				filed[i][j].setText("");
 			}
 		}
+		
 		JPanel jpan = new JPanel();
-		jpan.setLayout(new GridLayout(9, 9));
-		for (int a = 8; a > -1; a--) {
-			for (int b = 0; b < 9; b++) {
-				jpan.add(filed[b][a]);
+		jpan.setLayout(new GridLayout(9, 9)); //9*9的网格布局
+        //将textfield添加到布局中
+		for(int i = 0; i < 9; i++)
+		{
+			for(int j=0;j<9;j++)
+			{
+				jpan.add(filed[i][j]);
 			}
 		}
+		 
+		//界面布局居中
 		add(jpan, BorderLayout.CENTER);
+		
+		//添加两个按钮：计算和退出
 		JPanel jpb = new JPanel();
-		JButton button1 = new JButton("calc");
-		JButton button2 = new JButton("close");
+		JButton button1 = new JButton("计算");
+		JButton button2 = new JButton("退出");
+		//将按钮添加到界面上
 		jpb.add(button1);
 		jpb.add(button2);
+		
+		//给按钮添加时间响应函数
 		button1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				synchronized (obj) {
-					for (int a = 0; a < 9; a++) {
-						for (int b3 = 0; b3 < 9; b3++) {
-							int pp = 0;
-							if (!(filed[a][b3].getText().trim().equals(""))) {
-								pp = Integer.parseInt(filed[a][b3].getText().trim());
-								Calculate.b[a][b3] = pp;
+					for (int i = 0; i < 9; i++) {
+						for (int j = 0; j < 9; j++) {
+							int value = 0;
+							if (!(filed[i][j].getText().trim().equals(""))) {
+								value = Integer.parseInt(filed[i][j].getText().trim());
+								Calculate.b[i][j] = value;  //读取界面中填入的数值，将其填入数独表中 
 							}
 						}
 					}
 				}
 				synchronized (obj) {
+					//开启线程计算答案
 					new Thread(new Calculate()).start();
 				}
 			}
@@ -68,8 +87,10 @@ class Myframe extends JFrame {
 	}
 }
 
-public class Sudoku {
-	public static void main(String[] args) {
+public class Sudoku 
+{
+	public static void main(String[] args) 
+	{
 		Myframe myf = new Myframe();
 		myf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		myf.setTitle("sudoku");
@@ -79,8 +100,9 @@ public class Sudoku {
 }
 
 
-class Calculate implements Runnable {
-	/*
+class Calculate implements Runnable 
+{
+	/**
 	 *  Calculate 类实现了 Runnable 接口，实现了多线程操作，在计算每格数据的时候可以提高效率。
 	 *  java 中多线程实现 Runnable ： 
 	 *  步骤：
@@ -90,20 +112,24 @@ class Calculate implements Runnable {
 	 * 		4.将Runnable接口的子类对象作为实际参数传递给Thread类的构造函数。
 	 *		5.调用Thread类的start方法开启线程并调用Runnable接口子类run方法。
 	 */
-	public static boolean[][] boo = new boolean[9][9];  //二维数组 boo 用于判断该格是否为空，如果已经填入了数值，就不用再填了。
-	public static int upRow = 0;                       
-	public static int upColumn = 0;
+	public static boolean[][] boo = new boolean[9][9];  
+	//二维数组 boo 用于判断该格是否为空，如果已经填入了数值，就不用再填了。
+	public static int upRow = 0;//计算指定行的值                       
+	public static int upColumn = 0; //计算指定列的值
 	public static int[][] b = new int[9][9];    //二维数据 b 将存储九宫格中的数据
 
 	public static void flyBack(boolean[][] judge, int row, int column) {
 		/*
 		 * flyBack 函数用于查找没有填入数值的空格
+		 * 功能：计算同列的上一行元素值，如果它为空，则赋值给upRow，和upColumn
+		 * 如果不为空，继续递归
 		 */
-		int s = column * 9 + row;
+		int s = column * 9 + row;  //临时变量
 		s--;
-		int quotient = s / 9;
-		int remainder = s % 9;
-		if (judge[remainder][quotient]) {
+		
+		int quotient = s / 9;  //取商的值，实际就是column的值
+		int remainder = s % 9; //取余数值，实际是取(row-1)%9
+		if (judge[remainder][quotient]) { //判断是否满足条件
 			flyBack(judge, remainder, quotient);
 		} else {
 			upRow = remainder;
@@ -112,29 +138,35 @@ class Calculate implements Runnable {
 	}
 
 	public static void arrayAdd(ArrayList<Integer> array, TreeSet<Integer> tree) {
-		/*
+		/*遍历所有可能的值
 		 * arrayAdd 函数添加新的数值（1~9）到一行中，如果数据已经有了，跳过，没有就继续赋值。
 		 * 由于数独的规则，每行每列每个小九宫格1~9不能重复，所以填写 arrayAdd() 函数来添加tree中没有的元素，如果有了就跳过。
 		 */
-		for (int z = 1; z < 10; z++) {
-			boolean flag3 = true;
-			Iterator<Integer> it = tree.iterator();
-			while (it.hasNext()) {// 10
-				int b = it.next().intValue();
-				if (z == b) {
-					flag3 = false;
+		
+		for (int i = 1; i < 10; i++) 
+		{
+			boolean flag = true;  //判断是否符合条件标志
+			Iterator<Integer> ite = tree.iterator(); //迭代器
+			//遍历tree
+			while (ite.hasNext()) 
+			{// 10
+				int value = ite.next().intValue();
+				if (i == value) 
+				{
+					flag = false;
 					break;
 				}
 			}
-			if (flag3) {
-				array.add(new Integer(z));
+			if (flag) 
+			{ //若i没有出现在tree中，则将其添加进tree
+				array.add(new Integer(i));
 			}
-			flag3 = true;
+			flag = true;
 		}
 	}
 
 	public static ArrayList<Integer> assume(int row, int column) {
-		/*
+		/*遍历所有可能的值
 		 * assume 函数将大九宫格分成9个小九宫格，主要是判断在同行同列同一个小九宫格内哪些数值已经被填充了，添加该格备选的数值，就是候选法的思想。
 		 * 为了提高算法的效率，我们将大九宫格分成9个小九宫格
 		 * 主要是分析在同行同列同一个小九宫格内哪些数值已经被填充了，然后地调用 arrayAdd() 函数，添加该格备选的数值。
@@ -317,7 +349,7 @@ class Calculate implements Runnable {
 	}
 
 	public void run() {
-		/*
+		/*添加每格可能的选项
 		 * run 函数开始运行整个程序，生成最后的结果。
 		 * 在 run() 函数中填写空格的地方，我们的想法是将一行一行的分析，每个点都可能有几个值，
 		 * 我们用一个数组 utilization 来存放所有可能的值，在这个值的基础上填写下一个空格，
@@ -387,5 +419,11 @@ class Calculate implements Runnable {
 			}
 			column++;
 		}
+	}
+	public void judge()
+	{
+		/**
+		 * 判断九宫格是否完成
+		 */
 	}
 }
